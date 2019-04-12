@@ -1,51 +1,50 @@
 package api.carrinho.compra.domain.model;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.PrePersist;
 import javax.persistence.Table;
 
+import api.carrinho.compra.domain.model.shared.DomainModel;
+
+
 @Entity
 @Table(name = "pedido")
-public class Pedido {
+public class Pedido extends DomainModel<Long> {
 
-	private Long id;
-	private Double total;
+	private BigDecimal total;
 	private LocalDateTime dataPedido;
 
 	private Cliente cliente;
 	private Set<ItemPedido> itens;
 
-	@PrePersist
-	private void trigger() {
+	public Pedido() {
+		total = BigDecimal.ZERO;
+		itens = new HashSet<>(5);
+	}
+
+	private @PrePersist void trigger() {
 		this.dataPedido = LocalDateTime.now();
+	}
+
+	public void adicionar(ItemPedido itemPedido) {
+		itens.add(itemPedido);
 	}
 
 	public void calcular() {
 
-		total = 0D;
-		for (ItemPedido item : itens) {
-			total += item.getPrecoTotal();
-		}
-	}
-
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
+		itens
+			.stream()
+			.map(ItemPedido::getPrecoTotal)
+			.forEach(total::add);
 	}
 
 	@ManyToOne
@@ -66,11 +65,11 @@ public class Pedido {
 		this.dataPedido = dataPedido;
 	}
 
-	public Double getTotal() {
+	public BigDecimal getTotal() {
 		return total;
 	}
 
-	public void setTotal(Double total) {
+	public void setTotal(BigDecimal total) {
 		this.total = total;
 	}
 

@@ -1,32 +1,26 @@
 package api.carrinho.compra.domain.model;
 
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 
+import api.carrinho.compra.domain.model.shared.DomainModel;
+
 @Entity
 @Table(name = "cliente")
-public class Cliente {
+public class Cliente extends DomainModel<Long> {
 
-	private Long id;
 	private String nome;
 	private String email;
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	public Long getId() {
-		return id;
+	public Cliente(String nome, String email) {
+		super();
+		this.nome = nome;
+		this.email = email;
 	}
 
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	@NotBlank(message = "Informe o nome")
+	@NotBlank(message = "Nome é obrigatório")
 	public String getNome() {
 		return nome;
 	}
@@ -36,7 +30,7 @@ public class Cliente {
 	}
 
 	@Email(message = "E-mail inválido")
-	@NotBlank(message = "Informe o nome")
+	@NotBlank(message = "E-mail é obrigatório")
 	public String getEmail() {
 		return email;
 	}

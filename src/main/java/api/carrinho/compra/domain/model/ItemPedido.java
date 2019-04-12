@@ -1,27 +1,25 @@
 package api.carrinho.compra.domain.model;
 
+import java.math.BigDecimal;
+
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
+import api.carrinho.compra.domain.model.shared.DomainModel;
+
 @Entity
 @Table(name = "item_pedido")
-public class ItemPedido {
+public class ItemPedido extends DomainModel<Long> {
 
-	private Long id;
 	private Pedido pedido;
 	private Produto produto;
-	private Double precoTotal;
 	private Integer quantidade;
+	private BigDecimal precoTotal;
 
-	public ItemPedido() {}
-
-	public ItemPedido(Produto produto, Integer quantidade) {
+	public ItemPedido(Pedido pedido, Produto produto, Integer quantidade) {
 
 		this.produto = produto;
 		this.quantidade = quantidade;
@@ -38,17 +36,7 @@ public class ItemPedido {
 		if (produto.getPreco() == null)
 			throw new IllegalArgumentException("Cálculo não foi processado porquê o produto não consta preço");
 
-		precoTotal = produto.getPreco() * quantidade;
-	}
-
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
+		precoTotal.add(new BigDecimal(produto.getPreco() * quantidade));
 	}
 
 	@ManyToOne
@@ -81,11 +69,11 @@ public class ItemPedido {
 	}
 
 	@NotNull(message = "Preço do produto não informado")
-	public Double getPrecoTotal() {
+	public BigDecimal getPrecoTotal() {
 		return precoTotal;
 	}
 
-	public void setPrecoTotal(Double precoTotal) {
+	public void setPrecoTotal(BigDecimal precoTotal) {
 		this.precoTotal = precoTotal;
 	}
 }

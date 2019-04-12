@@ -1,30 +1,18 @@
 package api.carrinho.compra.domain.model;
 
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
+import api.carrinho.compra.domain.model.shared.DomainModel;
+
 @Entity
 @Table(name = "produto")
-public class Produto {
+public class Produto extends DomainModel<Long> {
 
-	private Long id;
 	private String nome;
 	private Double preco;
-
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
 
 	@NotBlank(message = "Nome é obrigatório")
 	public String getNome() {
