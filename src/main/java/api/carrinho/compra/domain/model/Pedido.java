@@ -15,7 +15,6 @@ import javax.persistence.Table;
 
 import api.carrinho.compra.domain.model.shared.DomainModel;
 
-
 @Entity
 @Table(name = "pedido")
 public class Pedido extends DomainModel<Long> {
@@ -35,11 +34,11 @@ public class Pedido extends DomainModel<Long> {
 		this.dataPedido = LocalDateTime.now();
 	}
 
-	public void adicionar(ItemPedido itemPedido) {
+	public void adiciona(ItemPedido itemPedido) {
 		itens.add(itemPedido);
 	}
 
-	public void calcular() {
+	public void fecharPedido() {
 
 		itens
 			.stream()

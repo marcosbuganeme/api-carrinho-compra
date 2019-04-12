@@ -28,17 +28,23 @@ public class ItemPedido extends DomainModel<Long> {
 	public void atualizarQuantidade(Integer novaQuantidade) {
 
 		this.quantidade = novaQuantidade;
-		calcularTotal();
+		calculaPrecoProduto();
 	}
 
-	public void calcularTotal() {
+	public ItemPedido calculaPrecoProduto() {
 
 		if (produto.getPreco() == null)
 			throw new IllegalArgumentException("Cálculo não foi processado porquê o produto não consta preço");
 
 		precoTotal.add(new BigDecimal(produto.getPreco() * quantidade));
+
+		return this;
 	}
 
+	public ItemPedido e() {
+		return this;
+	}
+	
 	@ManyToOne
 	@JoinColumn(name = "id_pedido")
 	public Pedido getPedido() {
@@ -49,6 +55,13 @@ public class ItemPedido extends DomainModel<Long> {
 		this.pedido = pedido;
 	}
 
+	public ItemPedido adiciona(Pedido pedido) {
+
+		setPedido(pedido);
+
+		return this;
+	}
+	
 	@ManyToOne
 	@JoinColumn(name = "id_produto")
 	public Produto getProduto() {
@@ -59,6 +72,13 @@ public class ItemPedido extends DomainModel<Long> {
 		this.produto = produto;
 	}
 
+	public ItemPedido adiciona(Produto produto) {
+
+		setProduto(produto);
+
+		return this;
+	}
+	
 	@NotNull(message = "Informe a quantidade do produto")
 	public Integer getQuantidade() {
 		return quantidade;
