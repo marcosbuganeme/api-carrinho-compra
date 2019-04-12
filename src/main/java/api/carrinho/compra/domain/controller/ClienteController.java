@@ -1,7 +1,10 @@
 package api.carrinho.compra.domain.controller;
 
+import java.net.URI;
 import java.util.List;
 import java.util.Optional;
+
+import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -14,6 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import api.carrinho.compra.domain.model.Cliente;
 import api.carrinho.compra.domain.service.ClienteService;
@@ -25,14 +29,21 @@ public class ClienteController {
 	private @Autowired ClienteService clienteService;
 
 	@PostMapping
-	public ResponseEntity<?> salvar(@RequestBody Cliente cliente) {
+	public ResponseEntity<?> salvar(@Valid @RequestBody Cliente cliente, UriComponentsBuilder uriBuilder) {
 
 		Cliente clienteSalvo = clienteService.save(cliente);
 
-		return ResponseEntity.ok(clienteSalvo);
+        URI location = uriBuilder
+					        .path("api/clientes/{id:\\d+}")
+					        .buildAndExpand(clienteSalvo.getId())
+					        .toUri();
+
+		return ResponseEntity
+					.created(location)
+					.body(clienteSalvo);
 	}
 
-	@GetMapping("{id}")
+    @GetMapping("{id:\\d+}")
 	public ResponseEntity<?> buscarPorId(@PathVariable("id") Long id) {
 
 		Optional<Cliente> cliente = clienteService.findById(id);
