@@ -13,21 +13,18 @@ import org.springframework.stereotype.Service;
 import api.carrinho.compra.domain.model.Produto;
 import api.carrinho.compra.domain.repository.ProdutoRepository;
 
-@Service
-public class ProdutoService {
+public @Service class ProdutoService {
 
-	@Autowired
-	private ProdutoRepository produtoRepository;
+	private @Autowired ProdutoRepository produtoRepository;
 
 	@Transactional
 	public Produto save(Produto produto) {
 		return produtoRepository.save(produto);
 	}
-	
+
 	public Optional<Produto> findById(Long id) {
 
-		return produtoRepository
-						.findById(id);
+		return produtoRepository.findById(id);
 	}
 
 	public List<Produto> findAll() {

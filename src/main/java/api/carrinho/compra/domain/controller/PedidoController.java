@@ -31,7 +31,7 @@ public class PedidoController {
 	@PostMapping
 	public ResponseEntity<?> salvar(@Valid @RequestBody Pedido pedido, UriComponentsBuilder uriBuilder) {
 
-		Pedido pedidoSalvo = pedidoService.save(pedido);
+		Pedido pedidoSalvo = pedidoService.criar(pedido);
 
         URI location = uriBuilder
 					        .path("api/pedidos/{id:\\d+}")
