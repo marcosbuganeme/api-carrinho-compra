@@ -6,7 +6,10 @@ import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import api.carrinho.compra.domain.model.shared.DomainModel;
 
@@ -17,10 +20,11 @@ public class ItemPedido extends DomainModel<Long> {
 	private Pedido pedido;
 	private Produto produto;
 	private Integer quantidade;
-	private BigDecimal precoTotal;
+	private BigDecimal precoTotal = BigDecimal.ZERO;
 
 	public ItemPedido(Pedido pedido, Produto produto, Integer quantidade) {
 
+		this.pedido = pedido;
 		this.produto = produto;
 		this.quantidade = quantidade;
 	}
@@ -36,7 +40,7 @@ public class ItemPedido extends DomainModel<Long> {
 		if (produto.getPreco() == null)
 			throw new IllegalArgumentException("Cálculo não foi processado porquê o produto não consta preço");
 
-		precoTotal.add(new BigDecimal(produto.getPreco() * quantidade));
+		precoTotal = new BigDecimal(produto.getPreco() * quantidade);
 
 		return this;
 	}
@@ -46,6 +50,7 @@ public class ItemPedido extends DomainModel<Long> {
 	}
 	
 	@ManyToOne
+	@JsonIgnore
 	@JoinColumn(name = "id_pedido")
 	public Pedido getPedido() {
 		return pedido;
@@ -78,8 +83,9 @@ public class ItemPedido extends DomainModel<Long> {
 
 		return this;
 	}
-	
-	@NotNull(message = "Informe a quantidade do produto")
+
+	@NotNull(message = "Quantidade do produto é obrigatório")
+	@Min(message = "No mínimo um (1) deve ser selecionado", value = 1)
 	public Integer getQuantidade() {
 		return quantidade;
 	}

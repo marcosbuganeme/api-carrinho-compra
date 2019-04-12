@@ -16,22 +16,21 @@ import api.carrinho.compra.domain.model.Cliente;
 import api.carrinho.compra.domain.model.ItemPedido;
 import api.carrinho.compra.domain.model.Pedido;
 import api.carrinho.compra.domain.model.Produto;
-import api.carrinho.compra.domain.repository.ClienteRepository;
 import api.carrinho.compra.domain.repository.PedidoRepository;
 import api.carrinho.compra.domain.service.exceptions.ResourceNotFoundException;
 
 public @Service class PedidoService {
 
 	private @Autowired ProdutoService produtoService;
+	private @Autowired ClienteService clienteService;
 	private @Autowired PedidoRepository pedidoRepository;
-	private @Autowired ClienteRepository clienteRepository;
 
 	@Transactional
 	public Pedido criar(Pedido pedido) {
 
 		return validaClienteDo(pedido)
 				.prepara(pedido)
-				.e()
+					.e()
 				.salva(pedido);
 	}
 
@@ -52,7 +51,7 @@ public @Service class PedidoService {
 
 	private PedidoService validaClienteDo(Pedido pedido) {
 
-		Cliente cliente = clienteRepository
+		Cliente cliente = clienteService
 								.findById(pedido.getCliente().getId())
 								.orElseThrow(resourceNotFoundException("cliente"));
 
@@ -61,33 +60,28 @@ public @Service class PedidoService {
 		return this;
 	}
 
-	private PedidoService e() {
+	private PedidoService prepara(Pedido pedido) {
+
+		for (ItemPedido item : pedido.getItens()) {
+
+			Produto produtoVerificado = verificaProdutoDo(item);
+			ItemPedido itemAtualizado = item
+										.adiciona(produtoVerificado)
+										.calculaPrecoProduto()
+										.e()
+										.adiciona(pedido);
+
+			pedido.adiciona(itemAtualizado);
+		}
+
+		pedido.fecharPedido();
+
 		return this;
 	}
 
 	private Pedido salva(Pedido pedido) {
 
 		return pedidoRepository.save(pedido);
-	}
-
-	private PedidoService prepara(Pedido pedido) {
-
-		for (ItemPedido item : pedido.getItens()) {
-
-			Produto produtoVerificado = verificaProdutoDo(item);
-
-			item
-			.adiciona(produtoVerificado)
-			.calculaPrecoProduto()
-			.e()
-			.adiciona(pedido);
-
-			pedido.adiciona(item);
-		}
-
-		pedido.fecharPedido();
-
-		return this;
 	}
 
 	private Produto verificaProdutoDo(ItemPedido item) {
@@ -102,4 +96,6 @@ public @Service class PedidoService {
 		String mensagem = String.format("%s não existe", StringUtils.capitalize(resource));
 		return () -> new ResourceNotFoundException(mensagem);
 	}
+
+	private PedidoService e() { return this; }
 }

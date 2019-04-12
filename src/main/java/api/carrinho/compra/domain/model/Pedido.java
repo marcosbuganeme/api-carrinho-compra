@@ -43,7 +43,7 @@ public class Pedido extends DomainModel<Long> {
 		itens
 			.stream()
 			.map(ItemPedido::getPrecoTotal)
-			.forEach(total::add);
+			.forEach(totalItemPedido -> total = total.add(totalItemPedido));
 	}
 
 	@ManyToOne
