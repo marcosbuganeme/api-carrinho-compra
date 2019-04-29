@@ -5,7 +5,6 @@ import java.math.BigDecimal;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.Table;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
@@ -14,19 +13,21 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import api.carrinho.compra.domain.model.shared.DomainModel;
 
 @Entity
-@Table(name = "item_pedido")
 public class ItemPedido extends DomainModel<Long> {
 
 	private Pedido pedido;
 	private Produto produto;
 	private Integer quantidade;
-	private BigDecimal precoTotal = BigDecimal.ZERO;
+	private BigDecimal desconto;
+	private BigDecimal precoTotal;
 
 	public ItemPedido(Pedido pedido, Produto produto, Integer quantidade) {
 
 		this.pedido = pedido;
 		this.produto = produto;
 		this.quantidade = quantidade;
+		this.desconto = BigDecimal.ZERO;
+		this.precoTotal = BigDecimal.ZERO;
 	}
 
 	public void atualizarQuantidade(Integer novaQuantidade) {
@@ -45,10 +46,6 @@ public class ItemPedido extends DomainModel<Long> {
 		return this;
 	}
 
-	public ItemPedido e() {
-		return this;
-	}
-	
 	@ManyToOne
 	@JsonIgnore
 	@JoinColumn(name = "id_pedido")
@@ -66,7 +63,7 @@ public class ItemPedido extends DomainModel<Long> {
 
 		return this;
 	}
-	
+
 	@ManyToOne
 	@JoinColumn(name = "id_produto")
 	public Produto getProduto() {
@@ -94,6 +91,14 @@ public class ItemPedido extends DomainModel<Long> {
 		this.quantidade = quantidade;
 	}
 
+	public BigDecimal getDesconto() {
+		return desconto;
+	}
+
+	public void setDesconto(BigDecimal desconto) {
+		this.desconto = desconto;
+	}
+
 	@NotNull(message = "Preço do produto não informado")
 	public BigDecimal getPrecoTotal() {
 		return precoTotal;
@@ -102,4 +107,8 @@ public class ItemPedido extends DomainModel<Long> {
 	public void setPrecoTotal(BigDecimal precoTotal) {
 		this.precoTotal = precoTotal;
 	}
+
+	public ItemPedido e() {
+		return this;
+	}	
 }
