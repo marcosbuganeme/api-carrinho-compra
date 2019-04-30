@@ -5,6 +5,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.persistence.CollectionTable;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
@@ -73,8 +75,8 @@ public class Cliente extends DomainModel<Long> {
 		this.documento = documento;
 	}
 
-	@OneToMany
 	@JsonIgnore
+	@OneToMany(mappedBy = "cliente")
 	public List<Pedido> getPedidos() {
 		return pedidos;
 	}
@@ -87,7 +89,8 @@ public class Cliente extends DomainModel<Long> {
 		this.pedidos = pedidos;
 	}
 
-	@OneToMany(fetch = FetchType.EAGER)
+	@ElementCollection
+	@CollectionTable(name="telefone")
 	public Set<String> getTelefones() {
 		return telefones;
 	}
@@ -96,7 +99,7 @@ public class Cliente extends DomainModel<Long> {
 		this.telefones = telefones;
 	}
 
-	@OneToMany(fetch = FetchType.EAGER)
+	@OneToMany(fetch = FetchType.EAGER, mappedBy = "cliente")
 	public List<Endereco> getEnderecos() {
 		return enderecos;
 	}

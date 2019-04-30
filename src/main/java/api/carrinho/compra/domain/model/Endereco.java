@@ -4,6 +4,7 @@ import javax.persistence.Entity;
 import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -11,6 +12,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import api.carrinho.compra.domain.model.shared.DomainModel;
 
 @Entity
+@Table(name = "endereco")
 public final class Endereco extends DomainModel<Long> {
 
 	private String numero;

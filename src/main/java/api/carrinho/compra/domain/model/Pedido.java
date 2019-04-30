@@ -7,15 +7,16 @@ import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
-import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.PrePersist;
+import javax.persistence.Table;
 
 import api.carrinho.compra.domain.model.shared.DomainModel;
 
 @Entity
+@Table(name = "pedido")
 public class Pedido extends DomainModel<Long> {
 
 	private BigDecimal total;
@@ -46,7 +47,7 @@ public class Pedido extends DomainModel<Long> {
 	}
 
 	@ManyToOne
-	@JoinColumn(name = "id_cliente", nullable = false, foreignKey = @ForeignKey(name = "fk_pedido_cliente"))
+	@JoinColumn(name = "id_cliente")
 	public Cliente getCliente() {
 		return cliente;
 	}
