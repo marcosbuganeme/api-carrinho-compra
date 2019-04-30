@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -21,14 +22,18 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import api.carrinho.compra.domain.model.Produto;
 import api.carrinho.compra.domain.service.ProdutoService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 
 @RestController
 @RequestMapping("api/produtos")
+@Api("Endpoint para o recurso de produtos")
 public class ProdutoController {
 
 	private @Autowired ProdutoService produtoService;
 
 	@PostMapping
+    @ApiOperation(value = "Criar um produto", response = Produto.class)
 	public ResponseEntity<?> salvar(@Valid @RequestBody Produto produto, UriComponentsBuilder uriBuilder) {
 
 		Produto produtoSalvo = produtoService.save(produto);
@@ -42,8 +47,18 @@ public class ProdutoController {
 					.created(location)
 					.body(produtoSalvo);
 	}
+	
+	@PutMapping("{id:\\d+}")
+	@ApiOperation(value = "Editar um produto", response = Produto.class)
+	public ResponseEntity<?> editar(@PathVariable("id") Long id, @Valid @RequestBody Produto produto) {
+
+		Produto produtoAtualizado = produtoService.update(id, produto);
+
+		return ResponseEntity.ok(produtoAtualizado);
+	}
 
     @GetMapping("{id:\\d+}")
+    @ApiOperation(value = "Recupera um produto pelo seu identificador", response = Produto.class)
 	public ResponseEntity<?> buscarPorId(@PathVariable("id") Long id) {
 
 		Optional<Produto> produto = produtoService.findById(id);
@@ -52,6 +67,7 @@ public class ProdutoController {
 	}
 
 	@GetMapping
+	@ApiOperation(value = "Recupera todos os produtos", response = Produto[].class)
 	public ResponseEntity<?> buscarTodosPedidos() {
 
 		List<Produto> produtos = produtoService.findAll();
@@ -60,6 +76,7 @@ public class ProdutoController {
 	}
 
 	@GetMapping("paginados")
+	@ApiOperation(value = "Recupera todos os produtos de forma paginada", response = Page.class)
 	public ResponseEntity<?> buscarTodosPedidosPaginados(@PageableDefault Pageable pageable) {
 
 		Page<Produto> page = produtoService.findAll(pageable);
