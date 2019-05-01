@@ -1,9 +1,10 @@
 package api.carrinho.compra.domain.model.shared;
 
 import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
+
+import org.hibernate.annotations.GenericGenerator;
 
 @MappedSuperclass
 public abstract class DomainModel<ID> {
@@ -11,7 +12,8 @@ public abstract class DomainModel<ID> {
 	private ID id;
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(generator = "increment")
+	@GenericGenerator(name = "increment", strategy = "increment")
 	public ID getId() {
 		return id;
 	}
