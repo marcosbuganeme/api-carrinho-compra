@@ -1,57 +1,53 @@
 package api.carrinho.compra.domain.model;
 
+import java.math.BigDecimal;
+
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
-@Entity
-@Table(name = "item_pedido")
-public class ItemPedido {
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
-	private Long id;
+import api.carrinho.compra.domain.model.shared.DomainModel;
+
+@Entity
+public class ItemPedido extends DomainModel<Long> {
+
 	private Pedido pedido;
 	private Produto produto;
-	private Double precoTotal;
 	private Integer quantidade;
+	private BigDecimal desconto;
+	private BigDecimal precoTotal;
 
-	public ItemPedido() {}
+	public ItemPedido(Pedido pedido, Produto produto, Integer quantidade) {
 
-	public ItemPedido(Produto produto, Integer quantidade) {
-
+		this.pedido = pedido;
 		this.produto = produto;
 		this.quantidade = quantidade;
+		this.desconto = BigDecimal.ZERO;
+		this.precoTotal = BigDecimal.ZERO;
 	}
 
 	public void atualizarQuantidade(Integer novaQuantidade) {
 
 		this.quantidade = novaQuantidade;
-		calcularTotal();
+		calculaPrecoProduto();
 	}
 
-	public void calcularTotal() {
+	public ItemPedido calculaPrecoProduto() {
 
 		if (produto.getPreco() == null)
 			throw new IllegalArgumentException("Cálculo não foi processado porquê o produto não consta preço");
 
-		precoTotal = produto.getPreco() * quantidade;
-	}
+		precoTotal = new BigDecimal(produto.getPreco() * quantidade);
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
+		return this;
 	}
 
 	@ManyToOne
+	@JsonIgnore
 	@JoinColumn(name = "id_pedido")
 	public Pedido getPedido() {
 		return pedido;
@@ -59,6 +55,13 @@ public class ItemPedido {
 
 	public void setPedido(Pedido pedido) {
 		this.pedido = pedido;
+	}
+
+	public ItemPedido adiciona(Pedido pedido) {
+
+		setPedido(pedido);
+
+		return this;
 	}
 
 	@ManyToOne
@@ -71,7 +74,15 @@ public class ItemPedido {
 		this.produto = produto;
 	}
 
-	@NotNull(message = "Informe a quantidade do produto")
+	public ItemPedido adiciona(Produto produto) {
+
+		setProduto(produto);
+
+		return this;
+	}
+
+	@NotNull(message = "Quantidade do produto é obrigatório")
+	@Min(message = "No mínimo um (1) deve ser selecionado", value = 1)
 	public Integer getQuantidade() {
 		return quantidade;
 	}
@@ -80,12 +91,24 @@ public class ItemPedido {
 		this.quantidade = quantidade;
 	}
 
+	public BigDecimal getDesconto() {
+		return desconto;
+	}
+
+	public void setDesconto(BigDecimal desconto) {
+		this.desconto = desconto;
+	}
+
 	@NotNull(message = "Preço do produto não informado")
-	public Double getPrecoTotal() {
+	public BigDecimal getPrecoTotal() {
 		return precoTotal;
 	}
 
-	public void setPrecoTotal(Double precoTotal) {
+	public void setPrecoTotal(BigDecimal precoTotal) {
 		this.precoTotal = precoTotal;
 	}
+
+	public ItemPedido e() {
+		return this;
+	}	
 }

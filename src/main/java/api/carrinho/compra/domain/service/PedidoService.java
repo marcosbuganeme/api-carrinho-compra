@@ -2,9 +2,11 @@ package api.carrinho.compra.domain.service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 import javax.transaction.Transactional;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -14,30 +16,22 @@ import api.carrinho.compra.domain.model.Cliente;
 import api.carrinho.compra.domain.model.ItemPedido;
 import api.carrinho.compra.domain.model.Pedido;
 import api.carrinho.compra.domain.model.Produto;
-import api.carrinho.compra.domain.repository.ClienteRepository;
 import api.carrinho.compra.domain.repository.PedidoRepository;
-import api.carrinho.compra.domain.repository.ProdutoRepository;
+import api.carrinho.compra.domain.service.exceptions.ResourceNotFoundException;
 
-@Service
-public class PedidoService {
+public @Service class PedidoService {
 
-	@Autowired
-	private PedidoRepository pedidoRepository;
-
-	@Autowired
-	private ClienteRepository clienteRepository;
-
-	@Autowired
-	private ProdutoRepository produtoRepository;
+	private @Autowired ProdutoService produtoService;
+	private @Autowired ClienteService clienteService;
+	private @Autowired PedidoRepository pedidoRepository;
 
 	@Transactional
-	public Pedido save(Pedido pedido) {
+	public Pedido criar(Pedido pedido) {
 
-		prepararCliente(pedido);
-		prepararItemPedido(pedido);
-		pedido.calcular();
-
-		return pedidoRepository.save(pedido);
+		return validaClienteDo(pedido)
+				.prepara(pedido)
+					.e()
+				.salva(pedido);
 	}
 
 	public Optional<Pedido> findById(Long id) {
@@ -55,32 +49,53 @@ public class PedidoService {
 		return pedidoRepository.findAll(pageable);
 	}
 
-	private void prepararCliente(Pedido pedido) {
+	private PedidoService validaClienteDo(Pedido pedido) {
 
-		Cliente cliente = clienteRepository
+		Cliente cliente = clienteService
 								.findById(pedido.getCliente().getId())
-								.orElseThrow(() -> new IllegalArgumentException("Cliente não existe"));
+								.orElseThrow(resourceNotFoundException("cliente"));
 
 		pedido.setCliente(cliente);
+
+		return this;
 	}
 
-	private void prepararItemPedido(Pedido pedido) {
+	private PedidoService prepara(Pedido pedido) {
 
 		for (ItemPedido item : pedido.getItens()) {
 
-			construirProduto(item);
-			item.calcularTotal();
-			item.setPedido(pedido);
-			pedido.getItens().add(item);
+			Produto produtoVerificado = verificaProdutoDo(item);
+			ItemPedido itemAtualizado = item
+										.adiciona(produtoVerificado)
+										.calculaPrecoProduto()
+										.e()
+										.adiciona(pedido);
+
+			pedido.adiciona(itemAtualizado);
 		}
+
+		pedido.fecharPedido();
+
+		return this;
 	}
 
-	private void construirProduto(ItemPedido item) {
+	private Pedido salva(Pedido pedido) {
 
-		Produto produto = produtoRepository
-								.findById(item.getProduto().getId())
-								.orElseThrow(() -> new IllegalArgumentException("Produto não existe"));
-
-		item.setProduto(produto);
+		return pedidoRepository.save(pedido);
 	}
+
+	private Produto verificaProdutoDo(ItemPedido item) {
+
+		return produtoService
+					.findById(item.getProduto().getId())
+					.orElseThrow(resourceNotFoundException("produto"));
+	}
+
+	private Supplier<ResourceNotFoundException> resourceNotFoundException(String resource) {
+
+		String mensagem = String.format("%s não existe", StringUtils.capitalize(resource));
+		return () -> new ResourceNotFoundException(mensagem);
+	}
+
+	private PedidoService e() { return this; }
 }

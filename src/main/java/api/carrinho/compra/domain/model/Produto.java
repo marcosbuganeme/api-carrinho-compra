@@ -1,38 +1,37 @@
 package api.carrinho.compra.domain.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import api.carrinho.compra.domain.model.shared.DomainModel;
+
 @Entity
-@Table(name = "produto")
-public class Produto {
+public class Produto extends DomainModel<Long> {
 
-	private Long id;
-	private String nome;
+	private String descricao;
 	private Double preco;
+	private List<Categoria> categorias;
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	public Long getId() {
-		return id;
+	{
+		categorias = new ArrayList<>(3);
 	}
 
-	public void setId(Long id) {
-		this.id = id;
+	@NotBlank(message = "Descrição é obrigatório")
+	public String getDescricao() {
+		return descricao;
 	}
 
-	@NotBlank(message = "Nome é obrigatório")
-	public String getNome() {
-		return nome;
-	}
-
-	public void setNome(String nome) {
-		this.nome = nome;
+	public void setDescricao(String descricao) {
+		this.descricao = descricao;
 	}
 
 	@NotNull(message = "Preço é obrigatório")
@@ -42,5 +41,18 @@ public class Produto {
 
 	public void setPreco(Double preco) {
 		this.preco = preco;
+	}
+
+	@JsonIgnore
+	@ManyToMany
+	@JoinTable(name = "produto_categoria",
+			   joinColumns = @JoinColumn(name = "id_produto"),
+			   inverseJoinColumns = @JoinColumn(name = "id_categoria"))
+	public List<Categoria> getCategorias() {
+		return categorias;
+	}
+
+	public void setCategorias(List<Categoria> categorias) {
+		this.categorias = categorias;
 	}
 }
