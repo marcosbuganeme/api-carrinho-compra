@@ -30,3 +30,4 @@ mvn*
 .classpath
 
 
+.factorypath
