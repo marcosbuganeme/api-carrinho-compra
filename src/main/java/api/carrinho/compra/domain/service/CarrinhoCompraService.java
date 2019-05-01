@@ -1,6 +1,7 @@
 package api.carrinho.compra.domain.service;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -29,6 +30,11 @@ public class CarrinhoCompraService {
 	public void removerItem(ItemPedido item) {
 
 		validaAndExecuta(item, itens::contains, itens::remove);
+	}
+
+	public List<ItemPedido> getItens() {
+
+		return Collections.unmodifiableList(itens);
 	}
 
 	private <T> void validaAndExecuta(T objetoDominio, 
