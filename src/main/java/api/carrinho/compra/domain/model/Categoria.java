@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
@@ -30,7 +31,7 @@ public class Categoria extends DomainModel<Long> {
 		this.nome = nome;
 	}
 
-	@ManyToMany(mappedBy = "categorias")
+	@ManyToMany(mappedBy = "categorias", fetch = FetchType.LAZY)
 	public List<Produto> getProdutos() {
 		return produtos;
 	}

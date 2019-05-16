@@ -4,9 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.Entity;
+import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
@@ -15,6 +17,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import api.carrinho.compra.domain.model.shared.DomainModel;
 
 @Entity
+@Table(name = "produto")
 public class Produto extends DomainModel<Long> {
 
 	private String descricao;
@@ -46,8 +49,8 @@ public class Produto extends DomainModel<Long> {
 	@JsonIgnore
 	@ManyToMany
 	@JoinTable(name = "produto_categoria",
-			   joinColumns = @JoinColumn(name = "id_produto"),
-			   inverseJoinColumns = @JoinColumn(name = "id_categoria"))
+			   joinColumns = @JoinColumn(name = "id_produto", foreignKey = @ForeignKey(name = "fk_produto_categoria")),
+			   inverseJoinColumns = @JoinColumn(name = "id_categoria", foreignKey = @ForeignKey(name = "fk_categoria_produto")))
 	public List<Categoria> getCategorias() {
 		return categorias;
 	}

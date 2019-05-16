@@ -3,8 +3,10 @@ package api.carrinho.compra.domain.model;
 import java.math.BigDecimal;
 
 import javax.persistence.Entity;
+import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
@@ -13,6 +15,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import api.carrinho.compra.domain.model.shared.DomainModel;
 
 @Entity
+@Table(name = "item_pedido")
 public class ItemPedido extends DomainModel<Long> {
 
 	private Pedido pedido;
@@ -48,7 +51,7 @@ public class ItemPedido extends DomainModel<Long> {
 
 	@ManyToOne
 	@JsonIgnore
-	@JoinColumn(name = "id_pedido")
+	@JoinColumn(name = "id_pedido", foreignKey = @ForeignKey(name = "fk_pedido_item_pedido"))
 	public Pedido getPedido() {
 		return pedido;
 	}
@@ -65,7 +68,7 @@ public class ItemPedido extends DomainModel<Long> {
 	}
 
 	@ManyToOne
-	@JoinColumn(name = "id_produto")
+	@JoinColumn(name = "id_produto", foreignKey = @ForeignKey(name = "fk_produto_item_pedido"))
 	public Produto getProduto() {
 		return produto;
 	}

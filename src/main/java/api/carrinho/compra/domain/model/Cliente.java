@@ -9,6 +9,7 @@ import javax.persistence.CollectionTable;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
@@ -20,8 +21,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import api.carrinho.compra.domain.model.shared.DomainModel;
 
 @Entity
-@Table(name = "cliente", uniqueConstraints = @UniqueConstraint(name = "uk_cliente_email", 
-															   columnNames = "email"))
+@Table(name = "cliente", uniqueConstraints = @UniqueConstraint(name = "uk_cliente_email", columnNames = "email"))
 public class Cliente extends DomainModel<Long> {
 
 	private String nome;
@@ -90,7 +90,7 @@ public class Cliente extends DomainModel<Long> {
 	}
 
 	@ElementCollection
-	@CollectionTable(name="telefone")
+	@CollectionTable(name="telefone", foreignKey = @ForeignKey(name = "fk_telefone_cliente"))
 	public Set<String> getTelefones() {
 		return telefones;
 	}

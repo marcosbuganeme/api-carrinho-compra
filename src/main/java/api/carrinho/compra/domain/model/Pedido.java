@@ -7,6 +7,7 @@ import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
@@ -47,7 +48,7 @@ public class Pedido extends DomainModel<Long> {
 	}
 
 	@ManyToOne
-	@JoinColumn(name = "id_cliente")
+	@JoinColumn(name = "id_cliente", foreignKey = @ForeignKey(name = "fk_cliente_pedido"))
 	public Cliente getCliente() {
 		return cliente;
 	}

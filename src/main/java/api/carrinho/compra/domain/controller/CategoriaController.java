@@ -65,7 +65,7 @@ public class CategoriaController {
 	}
 
 	@GetMapping
-	@ApiOperation(value = "Recupera todos as categorias", response = Categoria[].class)
+	@ApiOperation(value = "Recupera todas as categorias", response = Categoria[].class)
 	public ResponseEntity<?> buscarTodasCategorias() {
 
 		List<Categoria> categorias = categoriaService.findAll();
